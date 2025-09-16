@@ -157,4 +157,4 @@ Please change the parent <Route path="${X}"> to <Route path="${X==="/"?"*":`${X}
                   before:text-xs\r
                   before:opacity-0\r
                   checked:before:opacity-100\r
-                `})]},g.id)})),b.jsx("div",{className:"fixed bottom-5 -left-43 w-[460px] ",children:b.jsx("button",{onClick:r,className:"p-5 bg-[#0B0A141B] text-black rounded-2xl font-light",children:"بستن صفحه"})})]})};Qh.createRoot(document.getElementById("root")).render(b.jsx(Hh.StrictMode,{children:b.jsx(lv,{children:b.jsxs(Um,{children:[b.jsx(Mf,{path:"/",element:b.jsx(Nv,{})}),b.jsx(Mf,{path:"/students",element:b.jsx(Cv,{})})]})})}));
+                `})]},g.id)})),b.jsx("div",{className:"fixed bottom-5 -left-43 w-[460px] ",children:b.jsx("button",{onClick:r,className:"p-5 bg-[#0B0A141B] text-black rounded-2xl font-light",children:"بستن صفحه"})})]})};Qh.createRoot(document.getElementById("root")).render(b.jsx(Hh.StrictMode,{children:b.jsx(lv,{basename:"/exercise",children:b.jsxs(Um,{children:[b.jsx(Mf,{path:"/",element:b.jsx(Nv,{})}),b.jsx(Mf,{path:"/students",element:b.jsx(Cv,{})})]})})}));
