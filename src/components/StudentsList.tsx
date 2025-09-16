@@ -53,8 +53,14 @@ const handleClose = () => {
     navigate("/"); // برگشت به home
   };
   return (
-    <div className="w-[430px] mx-auto bg-[#F9FBFF] min-h-screen flex flex-col gap-7 pb-7">
-      <div className="flex justify-between items-center pt-15 border-b border-gray-300 mx-7 ">
+    <div className="w-[400px] bg-[#F9FBFF] min-h-screen flex flex-col gap-7 pb-7">
+  <div>
+    <div className="flex items-center justify-center mb-2">
+        <div className="h-[2px] w-[70px] bg-gray-200 rounded-2xl mt-10">
+        </div>
+    </div>
+
+      <div className="flex justify-between items-center border-b border-gray-300 mx-7 " >     
         <div className="flex items-center gap-1 mb-3">
           <span className="text-blue-500">{selectedNames.length}</span>
           <span>نفر انتخاب شده</span>
@@ -85,6 +91,7 @@ const handleClose = () => {
                 "
               />
       </div>
+    </div>
 
       {students.map((cls) =>
         cls.students.map((stu) => {
@@ -126,7 +133,7 @@ const handleClose = () => {
           );
         })
       )}
-      <div className="fixed bottom-5 left-15 max-w-md">
+      <div className="fixed bottom-5 -left-43 w-[460px] ">
         <button
           onClick={handleClose}
           className="p-5 bg-[#0B0A141B] text-black rounded-2xl font-light"
