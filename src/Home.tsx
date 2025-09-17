@@ -117,9 +117,9 @@ useEffect(() => {
   const handleScroll = () => {
     const currentScrollY = window.scrollY;
 
-    if (currentScrollY > 25 && showHeader) {
+    if (currentScrollY > 100 && showHeader) {
       setShowHeader(false); // پایین رفتن صفحه → هدر محو
-    } else if (currentScrollY <= 25 && !showHeader) {
+    } else if (currentScrollY <= 100 && !showHeader) {
       setShowHeader(true); // فقط وقتی بالا رسید → هدر ظاهر
     }
   };
@@ -216,7 +216,7 @@ useEffect(() => {
         </motion.div>
 
         {/* جستجو */}
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center justify-between gap-3 ">
           <div className="border-2 border-blue-600 rounded-[18px] h-[60px] w-12 flex justify-center items-center bg-[#284FFF1A]">
             <ArrowRight />
           </div>
