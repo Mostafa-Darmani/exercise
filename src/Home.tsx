@@ -124,8 +124,8 @@ const [collapsed, setCollapsed] = useState(false);
         // مخفی کردن هر دو بخش
         gsap.to([filtersRef.current, stepperRef.current], {
           height: 0,
-          paddingTop:5,
-          paddingBottom:5,
+          paddingTop:0,
+          paddingBottom:0,
           opacity: 0,
           duration: 0.4,
           ease: "power2.inOut",
