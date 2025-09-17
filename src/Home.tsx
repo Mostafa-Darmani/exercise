@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {  ChevronLeft } from "lucide-react";
 import ArrowIcon from "./assets/ArrowIcon";
 import BigFilter from "./assets/BigFilter";
@@ -11,6 +11,9 @@ import UserIcon from "./assets/UserIcon";
 import ArrowRight from "./assets/ArrowRight";
 import Search from "./assets/Search"
 import VectorPath from "./assets/VectorPath";
+import { motion, useAnimation } from "framer-motion";
+import { useRef } from "react"; // اگر قبلاً useRef وارد نشده
+
 
 interface Student {
   id: number;
@@ -107,7 +110,30 @@ export default function ClassSelector() {
   const [SortGroupLabel, setSortGroupLabel] = useState("کلاس");
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [selectedGroupOption, setSelectedGroupOption] = useState<string>("");
+  const controls = useAnimation();
+const lastScrollY = useRef(0);
+const [showHeader, setShowHeader] = useState(true);
 
+
+useEffect(() => {
+  const handleScroll = () => {
+    const currentScrollY = window.scrollY;
+    const delta = currentScrollY - lastScrollY.current;
+
+    if (delta > 10 && currentScrollY > 25 && showHeader) {
+      setShowHeader(false);
+      controls.start({ y: -150, opacity: 0 });
+    } else if (delta < -10 && !showHeader) {
+      setShowHeader(true);
+      controls.start({ y: 0, opacity: 1 });
+    }
+
+    lastScrollY.current = currentScrollY;
+  };
+
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, [showHeader, controls]);
 
 
   
@@ -155,9 +181,15 @@ export default function ClassSelector() {
   return (
     <div className="w-[400px] mx-auto bg-[#F9FBFF] min-h-screen pb-10 relative">
       {/* هدر بالا */}
-      <div className="flex flex-col gap-5 bg-white shadow-md px-5 pt-5 rounded-b-3xl">
+      <div className="flex flex-col gap-5 bg-white shadow-md px-5 pt-5 rounded-b-3xl sticky top-0 z-20">
         {/* استپر */}
-        <div className="flex items-center justify-center w-full px-3">
+        <motion.div 
+        animate={{
+            height: showHeader ? "auto" : 0, // ارتفاع جمع میشه
+            opacity: showHeader ? 1 : 0,     // محو شدن
+          }}
+          transition={{ duration: 0.2 }}
+         className="flex items-center justify-center w-full px-3">
           {/* Step 1 */}
           <div className="flex items-center gap-1">
             <div className="flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-semibold">
@@ -187,7 +219,7 @@ export default function ClassSelector() {
               3
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* جستجو */}
         <div className="flex items-center justify-between gap-3">
@@ -208,7 +240,13 @@ export default function ClassSelector() {
         </div>
 
         {/* مرتب‌سازی و گروه‌بندی */}
-        <div className="flex justify-center items-center gap-4 text-center text-xs relative">
+        <motion.div 
+           animate={{
+            height: showHeader ? "auto" : 0, // ارتفاع جمع میشه
+            opacity: showHeader ? 1 : 0,     // محو شدن
+          }}
+          transition={{ duration: 0.2 }}
+          className="flex justify-center items-center gap-4 text-center text-xs relative">
           <button
             className={`flex justify-between p-5 w-1/2  font-semibold ${
               showDropdown ? "bg-white rounded-t-2xl" : "bg-[#284FFF1A] rounded-2xl"
@@ -404,7 +442,7 @@ export default function ClassSelector() {
     </div>
   </div>
 )}
-        </div>
+        </motion.div>
         <div className="flex items-center justify-center mb-2">
         <div className="h-[2px] w-[70px] bg-gray-100 rounded-2xl"></div>
         </div>
