@@ -11,8 +11,7 @@ import UserIcon from "./assets/UserIcon";
 import ArrowRight from "./assets/ArrowRight";
 import Search from "./assets/Search"
 import VectorPath from "./assets/VectorPath";
-import { motion, useAnimation } from "framer-motion";
-import { useRef } from "react"; // اگر قبلاً useRef وارد نشده
+import { motion} from "framer-motion";
 
 
 interface Student {
