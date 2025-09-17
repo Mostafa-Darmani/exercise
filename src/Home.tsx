@@ -525,10 +525,41 @@ useEffect(() => {
 )}
         </div>
         <div className="flex items-center justify-center mb-2">
-        <div 
-        ref={dragLineRef}
-  className="h-[2px] w-[70px] bg-gray-100 rounded-2xl z-50 cursor-grab"
+        <div
+  className="h-[2px] w-[70px] bg-gray-100 rounded-2xl cursor-pointer z-50"
+  onClick={() => {
+    const stepperEl = stepperRef.current;
+    const filtersEl = filtersRef.current;
+    if (!stepperEl || !filtersEl) return;
+
+    if (!collapsed) {
+      // بستن
+      gsap.to([filtersEl, stepperEl], {
+        height: 0,
+        opacity: 0,
+        margin: 0,
+        paddingTop:5,
+        paddingBottom:5,
+        duration: 0.3,
+        ease: "power2.inOut",
+      });
+      setCollapsed(true);
+    } else {
+      // باز کردن
+      gsap.to([filtersEl, stepperEl], {
+        height: "auto",
+        opacity: 1,
+        margin: "1rem 0",
+        paddingTop:10,
+          paddingBottom:10,
+        duration: 0.3,
+        ease: "power2.inOut",
+      });
+      setCollapsed(false);
+    }
+  }}
 ></div>
+
 
 
 
