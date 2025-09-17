@@ -119,7 +119,7 @@ const [collapsed, setCollapsed] = useState(false);
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
-      if (currentScrollY > 100 && !collapsed) {
+      if (currentScrollY > 200 && !collapsed) {
         setCollapsed(true);
         // مخفی کردن هر دو بخش
         gsap.to([filtersRef.current, stepperRef.current], {
@@ -128,7 +128,7 @@ const [collapsed, setCollapsed] = useState(false);
           duration: 0.4,
           ease: "power2.inOut",
         });
-      } else if (currentScrollY <= 100 && collapsed) {
+      } else if (currentScrollY <= 200 && collapsed) {
         setCollapsed(false);
         // نمایش هر دو بخش
         gsap.to([filtersRef.current, stepperRef.current], {
