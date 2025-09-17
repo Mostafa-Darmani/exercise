@@ -110,8 +110,7 @@ export default function ClassSelector() {
   const [SortGroupLabel, setSortGroupLabel] = useState("کلاس");
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [selectedGroupOption, setSelectedGroupOption] = useState<string>("");
-  const controls = useAnimation();
-const lastScrollY = useRef(0);
+  
 const [showHeader, setShowHeader] = useState(true);
 
 
