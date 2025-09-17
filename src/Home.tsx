@@ -148,7 +148,83 @@ const [collapsed, setCollapsed] = useState(false);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [collapsed]);
 
+  const dragLineRef = useRef<HTMLDivElement | null>(null); // ref خط وسط
+  const collapsedRef = useRef(collapsed);
 
+  useEffect(() => { collapsedRef.current = collapsed }, [collapsed]);
+
+useEffect(() => {
+  const lineEl = dragLineRef.current;
+  const filtersEl = filtersRef.current;
+  const stepperEl = stepperRef.current;
+  if (!lineEl || !filtersEl || !stepperEl) return;
+
+  let startY = 0;
+  let deltaY = 0;
+
+  const handleTouchStart = (e: TouchEvent) => {
+    e.preventDefault();
+    startY = e.touches[0].clientY;
+
+    const handleTouchMove = (moveEvent: TouchEvent) => {
+      moveEvent.preventDefault();
+      deltaY = moveEvent.touches[0].clientY - startY;
+      const moveAmount = Math.max(Math.min(deltaY, 100), -100);
+      stepperEl.style.transform = `translateY(${moveAmount}px)`;
+      filtersEl.style.transform = `translateY(${moveAmount}px)`;
+      stepperEl.style.transition = "transform 0s";
+      filtersEl.style.transition = "transform 0s";
+    };
+
+    const handleTouchEnd = () => {
+      document.removeEventListener("touchmove", handleTouchMove);
+      document.removeEventListener("touchend", handleTouchEnd);
+
+      const threshold = 50;
+      if (!collapsedRef.current && deltaY < -threshold) {
+        // بالا کشیدن -> مخفی شدن
+        gsap.to([filtersEl, stepperEl], {
+          height: 0,
+          opacity: 0,
+          margin: 0,
+          paddingTop:5,
+          paddingBottom:5,
+          transform: "translateY(0)",
+          duration: 0.3,
+          ease: "power2.inOut",
+        });
+        setCollapsed(true);
+      } else if (collapsedRef.current && deltaY > threshold) {
+        // پایین کشیدن -> باز شدن
+        gsap.to([filtersEl, stepperEl], {
+          height: "auto",
+          opacity: 1,
+          margin: "1rem 0",
+          paddingTop:10,
+          paddingBottom:10,
+          transform: "translateY(0)",
+          duration: 0.3,
+          ease: "power2.inOut",
+        });
+        setCollapsed(false);
+      } else {
+        // کوتاه کشیده شده -> برگرد به حالت قبلی
+        gsap.to([filtersEl, stepperEl], {
+          transform: "translateY(0)",
+          duration: 0.2,
+          ease: "power2.out",
+        });
+      }
+    };
+
+    document.addEventListener("touchmove", handleTouchMove, { passive: false });
+    document.addEventListener("touchend", handleTouchEnd);
+  };
+
+  lineEl.addEventListener("touchstart", handleTouchStart, { passive: false });
+
+  return () => lineEl.removeEventListener("touchstart", handleTouchStart);
+}, []);
   
 
 
@@ -449,7 +525,13 @@ const [collapsed, setCollapsed] = useState(false);
 )}
         </div>
         <div className="flex items-center justify-center mb-2">
-        <div className="h-[2px] w-[70px] bg-gray-100 rounded-2xl"></div>
+        <div 
+        ref={dragLineRef}
+  className="h-[2px] w-[70px] bg-gray-100 rounded-2xl z-50 cursor-grab"
+></div>
+
+
+
         </div>
       </div>
 
