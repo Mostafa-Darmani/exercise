@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
 import {  ChevronLeft } from "lucide-react";
 import ArrowIcon from "./assets/ArrowIcon";
 import BigFilter from "./assets/BigFilter";
@@ -11,7 +12,6 @@ import UserIcon from "./assets/UserIcon";
 import ArrowRight from "./assets/ArrowRight";
 import Search from "./assets/Search"
 import VectorPath from "./assets/VectorPath";
-import { motion} from "framer-motion";
 
 
 interface Student {
@@ -110,24 +110,39 @@ export default function ClassSelector() {
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [selectedGroupOption, setSelectedGroupOption] = useState<string>("");
   
-const [showHeader, setShowHeader] = useState(true);
+const [collapsed, setCollapsed] = useState(false);
+  const filtersRef = useRef<HTMLDivElement | null>(null);
+  const stepperRef = useRef<HTMLDivElement | null>(null);
 
 
-useEffect(() => {
-  const handleScroll = () => {
-    const currentScrollY = window.scrollY;
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
 
-    if (currentScrollY > 100 && showHeader) {
-      setShowHeader(false); // پایین رفتن صفحه → هدر محو
-    } else if (currentScrollY <= 100 && !showHeader) {
-      setShowHeader(true); // فقط وقتی بالا رسید → هدر ظاهر
-    }
-  };
+      if (currentScrollY > 100 && !collapsed) {
+        setCollapsed(true);
+        // مخفی کردن هر دو بخش
+        gsap.to([filtersRef.current, stepperRef.current], {
+          height: 0,
+          opacity: 0,
+          duration: 0.4,
+          ease: "power2.inOut",
+        });
+      } else if (currentScrollY <= 100 && collapsed) {
+        setCollapsed(false);
+        // نمایش هر دو بخش
+        gsap.to([filtersRef.current, stepperRef.current], {
+          height: "auto",
+          opacity: 1,
+          duration: 0.4,
+          ease: "power2.inOut",
+        });
+      }
+    };
 
-  window.addEventListener("scroll", handleScroll);
-  return () => window.removeEventListener("scroll", handleScroll);
-}, [showHeader]);
-
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [collapsed]);
 
 
   
@@ -177,12 +192,8 @@ useEffect(() => {
       {/* هدر بالا */}
       <div className="flex flex-col gap-5 bg-white shadow-md px-5 pt-5 rounded-b-3xl sticky top-0 z-20">
         {/* استپر */}
-        <motion.div 
-        animate={{
-            height: showHeader ? "auto" : 0, // ارتفاع جمع میشه
-            opacity: showHeader ? 1 : 0,     // محو شدن
-          }}
-          transition={{ duration: 0.2 }}
+        <div 
+        ref={stepperRef}
          className="flex items-center justify-center w-full px-3">
           {/* Step 1 */}
           <div className="flex items-center gap-1">
@@ -213,7 +224,7 @@ useEffect(() => {
               3
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* جستجو */}
         <div className="flex items-center justify-between gap-3 ">
@@ -234,12 +245,8 @@ useEffect(() => {
         </div>
 
         {/* مرتب‌سازی و گروه‌بندی */}
-        <motion.div 
-           animate={{
-            height: showHeader ? "auto" : 0, // ارتفاع جمع میشه
-            opacity: showHeader ? 1 : 0,     // محو شدن
-          }}
-          transition={{ duration: 0.2 }}
+        <div 
+           ref={filtersRef}
           className="flex justify-center items-center gap-4 text-center text-xs relative">
           <button
             className={`flex justify-between p-5 w-1/2  font-semibold ${
@@ -436,7 +443,7 @@ useEffect(() => {
     </div>
   </div>
 )}
-        </motion.div>
+        </div>
         <div className="flex items-center justify-center mb-2">
         <div className="h-[2px] w-[70px] bg-gray-100 rounded-2xl"></div>
         </div>
