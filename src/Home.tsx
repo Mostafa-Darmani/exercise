@@ -431,7 +431,7 @@ export default function ClassSelector() {
         {filteredClasses.map((cls) => (
           <div
             key={cls.id}
-            className={`rounded-2xl bg-[#F9FBFF]${
+            className={`rounded-2xl bg-[#F9FBFF] mx-auto${
               selectedClasses.includes(cls.id)
                 ? "border-blue-500"
                 : "border-gray-200"
