@@ -119,20 +119,24 @@ const [collapsed, setCollapsed] = useState(false);
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
-      if (currentScrollY > 200 && !collapsed) {
+      if (currentScrollY > 100 && !collapsed) {
         setCollapsed(true);
         // مخفی کردن هر دو بخش
         gsap.to([filtersRef.current, stepperRef.current], {
           height: 0,
+          paddingTop:5,
+          paddingBottom:5,
           opacity: 0,
           duration: 0.4,
           ease: "power2.inOut",
         });
-      } else if (currentScrollY <= 200 && collapsed) {
+      } else if (currentScrollY <= 100 && collapsed) {
         setCollapsed(false);
         // نمایش هر دو بخش
         gsap.to([filtersRef.current, stepperRef.current], {
           height: "auto",
+          paddingTop:10,
+          paddingBottom:10,
           opacity: 1,
           duration: 0.4,
           ease: "power2.inOut",
@@ -190,11 +194,11 @@ const [collapsed, setCollapsed] = useState(false);
   return (
     <div className="w-[400px] mx-auto bg-[#F9FBFF] min-h-screen pb-10 relative">
       {/* هدر بالا */}
-      <div className="flex flex-col gap-5 bg-white shadow-md px-5 pt-5 rounded-b-3xl sticky top-0 z-20">
+      <div className="flex flex-col bg-white shadow-md px-5 rounded-b-3xl sticky top-0 z-20">
         {/* استپر */}
         <div 
         ref={stepperRef}
-         className="flex items-center justify-center w-full px-3">
+         className="flex items-center justify-center w-full px-3 py-5">
           {/* Step 1 */}
           <div className="flex items-center gap-1">
             <div className="flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-semibold">
@@ -227,7 +231,7 @@ const [collapsed, setCollapsed] = useState(false);
         </div>
 
         {/* جستجو */}
-        <div className="flex items-center justify-between gap-3 ">
+        <div className="flex items-center justify-between gap-3">
           <div className="border-2 border-blue-600 rounded-[18px] h-[60px] w-12 flex justify-center items-center bg-[#284FFF1A]">
             <ArrowRight />
           </div>
@@ -247,7 +251,7 @@ const [collapsed, setCollapsed] = useState(false);
         {/* مرتب‌سازی و گروه‌بندی */}
         <div 
            ref={filtersRef}
-          className="flex justify-center items-center gap-4 text-center text-xs relative">
+          className="flex justify-center items-center gap-4 text-center text-xs relative py-5">
           <button
             className={`flex justify-between p-5 w-1/2  font-semibold ${
               showDropdown ? "bg-white rounded-t-2xl" : "bg-[#284FFF1A] rounded-2xl"
