@@ -118,22 +118,18 @@ const [showHeader, setShowHeader] = useState(true);
 useEffect(() => {
   const handleScroll = () => {
     const currentScrollY = window.scrollY;
-    const delta = currentScrollY - lastScrollY.current;
 
-    if (delta > 10 && currentScrollY > 25 && showHeader) {
-      setShowHeader(false);
-      controls.start({ y: -150, opacity: 0 });
-    } else if (delta < -10 && !showHeader) {
-      setShowHeader(true);
-      controls.start({ y: 0, opacity: 1 });
+    if (currentScrollY > 25 && showHeader) {
+      setShowHeader(false); // پایین رفتن صفحه → هدر محو
+    } else if (currentScrollY <= 25 && !showHeader) {
+      setShowHeader(true); // فقط وقتی بالا رسید → هدر ظاهر
     }
-
-    lastScrollY.current = currentScrollY;
   };
 
   window.addEventListener("scroll", handleScroll);
   return () => window.removeEventListener("scroll", handleScroll);
-}, [showHeader, controls]);
+}, [showHeader]);
+
 
 
   
