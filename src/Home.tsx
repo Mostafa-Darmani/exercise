@@ -130,30 +130,30 @@ const [collapsed, setCollapsed] = useState(false);
 const animatingRef = useRef(false); // وقتی true باشه scroll غیرفعاله
 
 
-
-
-
 useEffect(() => {
   const handleScroll = () => {
     const scrollY = window.scrollY;
 
-    if (animatingRef.current) return; // اگر animation در حال اجراست، کاری نکن
+    if (animatingRef.current) return;
 
-    if (scrollY > 100 && !collapsed) {
-      animatingRef.current = true; // شروع animation
+    // وقتی اسکرول پایین رفت و هنوز collapsed نیست
+    if (scrollY > 120 && !collapsed) {
+      animatingRef.current = true;
       gsap.to([filtersRef.current, stepperRef.current], {
         height: 0,
         paddingTop: 5,
         paddingBottom: 5,
         opacity: 0,
         duration: 0.2,
-        ease: "linear",
         onComplete: () => {
           setCollapsed(true);
-          animatingRef.current = false; // تمام شد → scroll دوباره فعال
-        }
+          animatingRef.current = false;
+        },
       });
-    } else if (scrollY <= 0 && collapsed) {
+    }
+
+    // وقتی اسکرول به بالای صفحه رسید (scrollY === 0)
+    if (scrollY === 0 && collapsed) {
       animatingRef.current = true;
       gsap.to([filtersRef.current, stepperRef.current], {
         height: "auto",
@@ -161,21 +161,18 @@ useEffect(() => {
         paddingBottom: 10,
         opacity: 1,
         duration: 0.2,
-        ease: "power2.inOut",
         onComplete: () => {
           setCollapsed(false);
           animatingRef.current = false;
-        }
+        },
       });
     }
   };
 
- const debouncedScroll = debounce(handleScroll, 50);
-window.addEventListener("scroll", debouncedScroll);
-return () => window.removeEventListener("scroll", debouncedScroll);
-
+  window.addEventListener("scroll", handleScroll);
   return () => window.removeEventListener("scroll", handleScroll);
 }, [collapsed]);
+
 
 
   const collapsedRef = useRef(collapsed);
