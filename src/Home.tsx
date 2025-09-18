@@ -87,12 +87,10 @@ const classes: ClassType[] = [
 function debounce(func: Function, wait: number) {
   let timeout: number | null = null;
   return (...args: any[]) => {
-    if (!timeout) {
-      func(...args); // اجرای فوری اولین بار بعد از شروع scroll
-    }
     if (timeout) clearTimeout(timeout);
     timeout = window.setTimeout(() => {
-      timeout = null; // آماده برای دفعه بعد
+      func(...args);
+      timeout = null;
     }, wait);
   };
 }
@@ -127,53 +125,60 @@ export default function ClassSelector() {
 const [collapsed, setCollapsed] = useState(false);
   const filtersRef = useRef<HTMLDivElement | null>(null);
   const stepperRef = useRef<HTMLDivElement | null>(null);
-const animatingRef = useRef(false); // وقتی true باشه scroll غیرفعاله
+  const animatingRef = useRef(false);
+  const lastScrollY = useRef(0);
 
+  useEffect(() => {
+    const threshold = 5;
 
-useEffect(() => {
-  const handleScroll = () => {
-    const scrollY = window.scrollY;
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const diff = currentScrollY - lastScrollY.current;
 
-    if (animatingRef.current) return;
+      if (animatingRef.current) return;
+      if (Math.abs(diff) < threshold) return;
 
-    // وقتی اسکرول پایین رفت و هنوز collapsed نیست
-    if (scrollY > 120 && !collapsed) {
-      animatingRef.current = true;
-      gsap.to([filtersRef.current, stepperRef.current], {
-        height: 0,
-        paddingTop: 5,
-        paddingBottom: 5,
-        opacity: 0,
-        duration: 0.2,
-        onComplete: () => {
-          setCollapsed(true);
-          animatingRef.current = false;
-        },
-      });
-    }
+      if (diff > 0 && !collapsed) {
+        animatingRef.current = true;
+        gsap.to([filtersRef.current, stepperRef.current], {
+          height: 0,
+          paddingTop: 5,
+          paddingBottom: 5,
+          opacity: 0,
+          duration: 0.25,
+          ease: "power2.out",
+          onComplete: () => {
+            setCollapsed(true);
+            animatingRef.current = false;
+          },
+        });
+      }
 
-    // وقتی اسکرول به بالای صفحه رسید (scrollY === 0)
-    if (scrollY === 0 && collapsed) {
-      animatingRef.current = true;
-      gsap.to([filtersRef.current, stepperRef.current], {
-        height: "auto",
-        paddingTop: 10,
-        paddingBottom: 10,
-        opacity: 1,
-        duration: 0.2,
-        onComplete: () => {
-          setCollapsed(false);
-          animatingRef.current = false;
-        },
-      });
-    }
-  };
+      if (diff < 0 && collapsed) {
+        animatingRef.current = true;
+        gsap.to([filtersRef.current, stepperRef.current], {
+          height: "auto",
+          paddingTop: 10,
+          paddingBottom: 10,
+          opacity: 1,
+          duration: 0.25,
+          ease: "power2.out",
+          onComplete: () => {
+            setCollapsed(false);
+            animatingRef.current = false;
+          },
+        });
+      }
 
-  window.addEventListener("scroll", handleScroll);
-  return () => window.removeEventListener("scroll", handleScroll);
-}, [collapsed]);
+      lastScrollY.current = currentScrollY;
+    };
 
+    const debouncedScroll = debounce(handleScroll, 50);
 
+    window.addEventListener("scroll", debouncedScroll, { passive: true });
+    return () =>
+      window.removeEventListener("scroll", debouncedScroll);
+  }, [collapsed]);
 
   const collapsedRef = useRef(collapsed);
 
