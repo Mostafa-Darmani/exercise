@@ -133,7 +133,7 @@ useEffect(() => {
 
     if (animatingRef.current) return; // اگر animation در حال اجراست، کاری نکن
 
-    if (scrollY > 50 && !collapsed) {
+    if (scrollY > 100 && !collapsed) {
       animatingRef.current = true; // شروع animation
       gsap.to([filtersRef.current, stepperRef.current], {
         height: 0,
