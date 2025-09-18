@@ -85,12 +85,18 @@ const classes: ClassType[] = [
   },
 ];
 function debounce(func: Function, wait: number) {
-  let timeout: number;
+  let timeout: number | null = null;
   return (...args: any[]) => {
-    clearTimeout(timeout);
-    timeout = window.setTimeout(() => func(...args), wait);
+    if (!timeout) {
+      func(...args); // اجرای فوری اولین بار بعد از شروع scroll
+    }
+    if (timeout) clearTimeout(timeout);
+    timeout = window.setTimeout(() => {
+      timeout = null; // آماده برای دفعه بعد
+    }, wait);
   };
 }
+
 
 
 export default function ClassSelector() {
