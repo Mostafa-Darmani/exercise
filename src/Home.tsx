@@ -461,43 +461,52 @@ useEffect(() => {
         </div>
         <div className="flex items-center justify-center mb-2">
         <div
-  className="h-[2px] w-[70px] bg-gray-100 rounded-2xl cursor-pointer z-50"
-  onClick={() => {
-    const stepperEl = stepperRef.current;
-    const filtersEl = filtersRef.current;
-    if (!stepperEl || !filtersEl) return;
+          className="h-[2px] w-[70px] bg-gray-100 rounded-2xl cursor-pointer z-50"
+          onClick={() => {
+            const stepperEl = stepperRef.current;
+            const filtersEl = filtersRef.current;
+            if (!stepperEl || !filtersEl) return;
 
-    if (!collapsed) {
-      // بستن
-      gsap.to([filtersEl, stepperEl], {
-        height: 0,
-        opacity: 0,
-        margin: 0,
-        paddingTop:5,
-        paddingBottom:5,
-        duration: 0.3,
-        ease: "power2.inOut",
-      });
-      setCollapsed(true);
-    } else {
-      // باز کردن
-      gsap.to([filtersEl, stepperEl], {
-        height: "auto",
-        opacity: 1,
-        margin: "1rem 0",
-        paddingTop:10,
-          paddingBottom:10,
-        duration: 0.3,
-        ease: "power2.inOut",
-      });
-      setCollapsed(false);
-    }
-  }}
-></div>
+            // اگر animation در حال اجراست، کلیک نادیده گرفته می‌شود
+            if (animatingRef.current) return;
+            animatingRef.current = true;
 
+            // overflow hidden برای smooth شدن انیمیشن
+            gsap.set([filtersEl, stepperEl], { overflow: "hidden" });
 
-
-
+            if (!collapsed) {
+              // بستن collapse
+              gsap.to([filtersEl, stepperEl], {
+                height: 0,
+                opacity: 0,
+                margin: 0,
+                paddingTop: 5,
+                paddingBottom: 5,
+                duration: 0.3,
+                ease: "power2.inOut",
+                onComplete: () => {
+                  setCollapsed(true); // state بعد از انیمیشن تغییر می‌کند
+                  animatingRef.current = false; // اجازه کلیک مجدد
+                },
+              });
+            } else {
+              // باز کردن collapse
+              gsap.to([filtersEl, stepperEl], {
+                height: "auto",
+                opacity: 1,
+                margin: "1rem 0",
+                paddingTop: 8,
+                paddingBottom: 8,
+                duration: 0.3,
+                ease: "power2.inOut",
+                onComplete: () => {
+                  setCollapsed(false);
+                  animatingRef.current = false;
+                },
+              });
+            }
+          }}
+        ></div>
         </div>
       </div>
 
@@ -614,72 +623,69 @@ useEffect(() => {
             </div>
 
             {/* لیست دانش‌آموزها */}
-            {openClass === cls.id && (
-              <div
-                className={`flex flex-col transition-colors `}
-               
-              >
-                {cls.students.map((stu) => {
-                  const isSelected = selectedStudents.includes(
-                    `${cls.id}-${stu.id}`
-                  );
+           {openClass === cls.id && (
+  <div className="flex flex-col transition-colors">
+    {cls.students.map((stu) => {
+      const isSelected = selectedStudents.includes(`${cls.id}-${stu.id}`);
 
-                  return (
-                    <div
-                      key={stu.id}
-                      className={`transition-colors ${
-                        isSelected ? "bg-blue-100" : "bg-[#F9FBFF]"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between  pl-10 py-5 mr-10.5 pr-3 border-r border-dashed border-[#284FFF]  transition-colors"
-                       style={{
-                        borderRightStyle: "dashed",
-                        borderRightWidth: "2px",
-                        borderImage:
-                          "repeating-linear-gradient( to bottom, #9ca3af 0, #9ca3af 6px, transparent 6px, transparent 12px ) 1",
-                      }}
-                      >
-                        <span className="text-gray-700 text-sm">
-                          {stu.name}
-                        </span>
+      return (
+        <div
+          key={stu.id}
+          className={`transition-colors cursor-pointer ${
+            isSelected ? "bg-blue-100" : "bg-[#F9FBFF]"
+          }`}
+          onClick={() => toggleStudent(cls.id, stu.id)} // ← اضافه شد
+        >
+          <div
+            className="flex items-center justify-between pl-10 py-5 mr-10.5 pr-3 border-r border-dashed border-[#284FFF] transition-colors"
+            style={{
+              borderRightStyle: "dashed",
+              borderRightWidth: "2px",
+              borderImage:
+                "repeating-linear-gradient( to bottom, #9ca3af 0, #9ca3af 6px, transparent 6px, transparent 12px ) 1",
+            }}
+          >
+            <span className="text-gray-700 text-sm">{stu.name}</span>
 
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-gray-500">
-                            {stu.date}
-                          </span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-500">{stu.date}</span>
 
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={() => toggleStudent(cls.id, stu.id)}
-                            className="
-                              w-5 h-5 
-                              cursor-pointer
-                              appearance-none
-                              bg-white
-                              border border-gray-400
-                              rounded-lg
-                              checked:bg-white
-                              relative
-                              before:content-['✔']
-                              before:absolute
-                              before:text-black
-                              before:top-1/2
-                              before:left-1/2
-                              before:-translate-x-1/2
-                              before:-translate-y-1/2
-                              before:text-xs
-                              before:opacity-0
-                              checked:before:opacity-100
-                            "
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+              <input
+                type="checkbox"
+                checked={isSelected}
+                onChange={(e) => {
+                  e.stopPropagation(); // ← جلوگیری از دو بار trigger شدن
+                  toggleStudent(cls.id, stu.id);
+                }}
+                className="
+                  w-5 h-5 
+                  cursor-pointer
+                  appearance-none
+                  bg-white
+                  border border-gray-400
+                  rounded-lg
+                  checked:bg-white
+                  relative
+                  before:content-['✔']
+                  before:absolute
+                  before:text-black
+                  before:top-1/2
+                  before:left-1/2
+                  before:-translate-x-1/2
+                  before:-translate-y-1/2
+                  before:text-xs
+                  before:opacity-0
+                  checked:before:opacity-100
+                "
+              />
+            </div>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+)}
+
           </div>
         ))}
 
