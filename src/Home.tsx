@@ -113,119 +113,54 @@ export default function ClassSelector() {
 const [collapsed, setCollapsed] = useState(false);
   const filtersRef = useRef<HTMLDivElement | null>(null);
   const stepperRef = useRef<HTMLDivElement | null>(null);
+const animatingRef = useRef(false); // وقتی true باشه scroll غیرفعاله
 
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
+useEffect(() => {
+  const handleScroll = () => {
+    const scrollY = window.scrollY;
 
-      if (currentScrollY > 100 && !collapsed) {
-        setCollapsed(true);
-        // مخفی کردن هر دو بخش
-        gsap.to([filtersRef.current, stepperRef.current], {
-          height: 0,
-          paddingTop:5,
-          paddingBottom:5,
-          opacity: 0,
-          duration: 0.4,
-          ease: "power2.inOut",
-        });
-      } else if (currentScrollY <= 100 && collapsed) {
-        setCollapsed(false);
-        // نمایش هر دو بخش
-        gsap.to([filtersRef.current, stepperRef.current], {
-          height: "auto",
-          paddingTop:10,
-          paddingBottom:10,
-          opacity: 1,
-          duration: 0.4,
-          ease: "power2.inOut",
-        });
-      }
-    };
+    if (animatingRef.current) return; // اگر animation در حال اجراست، کاری نکن
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [collapsed]);
+    if (scrollY > 50 && !collapsed) {
+      animatingRef.current = true; // شروع animation
+      gsap.to([filtersRef.current, stepperRef.current], {
+        height: 0,
+        paddingTop: 5,
+        paddingBottom: 5,
+        opacity: 0,
+        duration: 0.2,
+        ease: "linear",
+        onComplete: () => {
+          setCollapsed(true);
+          animatingRef.current = false; // تمام شد → scroll دوباره فعال
+        }
+      });
+    } else if (scrollY <= 0 && collapsed) {
+      animatingRef.current = true;
+      gsap.to([filtersRef.current, stepperRef.current], {
+        height: "auto",
+        paddingTop: 10,
+        paddingBottom: 10,
+        opacity: 1,
+        duration: 0.2,
+        ease: "power2.inOut",
+        onComplete: () => {
+          setCollapsed(false);
+          animatingRef.current = false;
+        }
+      });
+    }
+  };
 
-  const dragLineRef = useRef<HTMLDivElement | null>(null); // ref خط وسط
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, [collapsed]);
+
+
   const collapsedRef = useRef(collapsed);
 
   useEffect(() => { collapsedRef.current = collapsed }, [collapsed]);
-
-useEffect(() => {
-  const lineEl = dragLineRef.current;
-  const filtersEl = filtersRef.current;
-  const stepperEl = stepperRef.current;
-  if (!lineEl || !filtersEl || !stepperEl) return;
-
-  let startY = 0;
-  let deltaY = 0;
-
-  const handleTouchStart = (e: TouchEvent) => {
-    e.preventDefault();
-    startY = e.touches[0].clientY;
-
-    const handleTouchMove = (moveEvent: TouchEvent) => {
-      moveEvent.preventDefault();
-      deltaY = moveEvent.touches[0].clientY - startY;
-      const moveAmount = Math.max(Math.min(deltaY, 100), -100);
-      stepperEl.style.transform = `translateY(${moveAmount}px)`;
-      filtersEl.style.transform = `translateY(${moveAmount}px)`;
-      stepperEl.style.transition = "transform 0s";
-      filtersEl.style.transition = "transform 0s";
-    };
-
-    const handleTouchEnd = () => {
-      document.removeEventListener("touchmove", handleTouchMove);
-      document.removeEventListener("touchend", handleTouchEnd);
-
-      const threshold = 50;
-      if (!collapsedRef.current && deltaY < -threshold) {
-        // بالا کشیدن -> مخفی شدن
-        gsap.to([filtersEl, stepperEl], {
-          height: 0,
-          opacity: 0,
-          margin: 0,
-          paddingTop:5,
-          paddingBottom:5,
-          transform: "translateY(0)",
-          duration: 0.3,
-          ease: "power2.inOut",
-        });
-        setCollapsed(true);
-      } else if (collapsedRef.current && deltaY > threshold) {
-        // پایین کشیدن -> باز شدن
-        gsap.to([filtersEl, stepperEl], {
-          height: "auto",
-          opacity: 1,
-          margin: "1rem 0",
-          paddingTop:10,
-          paddingBottom:10,
-          transform: "translateY(0)",
-          duration: 0.3,
-          ease: "power2.inOut",
-        });
-        setCollapsed(false);
-      } else {
-        // کوتاه کشیده شده -> برگرد به حالت قبلی
-        gsap.to([filtersEl, stepperEl], {
-          transform: "translateY(0)",
-          duration: 0.2,
-          ease: "power2.out",
-        });
-      }
-    };
-
-    document.addEventListener("touchmove", handleTouchMove, { passive: false });
-    document.addEventListener("touchend", handleTouchEnd);
-  };
-
-  lineEl.addEventListener("touchstart", handleTouchStart, { passive: false });
-
-  return () => lineEl.removeEventListener("touchstart", handleTouchStart);
-}, []);
-  
 
 
   const toggleStudent = (classId: number, studentId: number) => {
