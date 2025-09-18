@@ -127,7 +127,7 @@ useEffect(() => {
   if (currentY <= 0) {
     if (collapsed) {
       gsap.to([filtersRef.current, stepperRef.current], {
-        height: "auto",
+        maxHeight: 200,
         paddingTop: 10,
         paddingBottom: 10,
         opacity: 1,
@@ -152,7 +152,7 @@ useEffect(() => {
     if (scrollDirection === "down" && !collapsed && !animatingRef.current) {
       animatingRef.current = true;
       gsap.to([filtersRef.current, stepperRef.current], {
-        height: 0,
+        maxHeight: 0,
         paddingTop: 5,
         paddingBottom: 5,
         opacity: 0,
@@ -168,7 +168,7 @@ useEffect(() => {
     if (scrollDirection === "up" && collapsed && !animatingRef.current) {
       animatingRef.current = true;
       gsap.to([filtersRef.current, stepperRef.current], {
-        height: "auto",
+        maxHeight: 200,
         paddingTop: 10,
         paddingBottom: 10,
         opacity: 1,
@@ -191,10 +191,10 @@ useEffect(() => {
     let ticking = false;
     const throttledScroll = () => {
       if (!ticking) {
-        requestAnimationFrame(() => {
+        setTimeout(() => {
           handleScroll();
           ticking = false;
-        });
+        }, 50); // هر 50ms یک بار اجرا می‌کنه
         ticking = true;
       }
     };
