@@ -84,17 +84,6 @@ const classes: ClassType[] = [
     ],
   },
 ];
-function debounce(func: Function, wait: number) {
-  let timeout: number | null = null;
-  return (...args: any[]) => {
-    if (timeout) clearTimeout(timeout);
-    timeout = window.setTimeout(() => {
-      func(...args);
-      timeout = null;
-    }, wait);
-  };
-}
-
 
 
 export default function ClassSelector() {
@@ -126,19 +115,25 @@ const [collapsed, setCollapsed] = useState(false);
   const filtersRef = useRef<HTMLDivElement | null>(null);
   const stepperRef = useRef<HTMLDivElement | null>(null);
   const animatingRef = useRef(false);
-  const lastScrollY = useRef(0);
 
-  useEffect(() => {
-    const threshold = 5;
+useEffect(() => {
+  let lastScrollY = window.scrollY;
+  let scrollDirection: "up" | "down" | null = null;
 
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      const diff = currentScrollY - lastScrollY.current;
+  const threshold = 10; // نوسانات کوچک نادیده گرفته میشه
 
-      if (animatingRef.current) return;
-      if (Math.abs(diff) < threshold) return;
+  const handleScroll = () => {
+    const currentScrollY = window.scrollY;
+    const diff = currentScrollY - lastScrollY;
 
-      if (diff > 0 && !collapsed) {
+    if (Math.abs(diff) < threshold) return;
+
+    const newDirection = diff > 0 ? "down" : "up";
+
+    if (newDirection !== scrollDirection) {
+      scrollDirection = newDirection;
+
+      if (scrollDirection === "down" && !collapsed) {
         animatingRef.current = true;
         gsap.to([filtersRef.current, stepperRef.current], {
           height: 0,
@@ -154,7 +149,7 @@ const [collapsed, setCollapsed] = useState(false);
         });
       }
 
-      if (diff < 0 && collapsed) {
+      if (scrollDirection === "up" && collapsed) {
         animatingRef.current = true;
         gsap.to([filtersRef.current, stepperRef.current], {
           height: "auto",
@@ -169,16 +164,16 @@ const [collapsed, setCollapsed] = useState(false);
           },
         });
       }
+    }
 
-      lastScrollY.current = currentScrollY;
-    };
+    lastScrollY = currentScrollY;
+  };
 
-    const debouncedScroll = debounce(handleScroll, 50);
+  const debouncedScroll = () => requestAnimationFrame(handleScroll);
 
-    window.addEventListener("scroll", debouncedScroll, { passive: true });
-    return () =>
-      window.removeEventListener("scroll", debouncedScroll);
-  }, [collapsed]);
+  window.addEventListener("scroll", debouncedScroll, { passive: true });
+  return () => window.removeEventListener("scroll", debouncedScroll);
+}, [collapsed]);
 
   const collapsedRef = useRef(collapsed);
 
