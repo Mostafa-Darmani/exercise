@@ -461,7 +461,7 @@ useEffect(() => {
         </div>
         <div className="flex items-center justify-center mb-2">
         <div
-          className="h-[2px] w-[70px] bg-gray-100 rounded-2xl cursor-pointer z-50"
+          className="h-[3px] w-[70px] bg-gray-100 rounded-2xl cursor-pointer z-50"
           onClick={() => {
             const stepperEl = stepperRef.current;
             const filtersEl = filtersRef.current;
