@@ -121,49 +121,55 @@ useEffect(() => {
     const threshold = 10; // فقط وقتی تغییر اسکرول > 10px باشه انیمیشن اجرا میشه
 
     const handleScroll = () => {
-      const currentY = window.scrollY;
-      if (Math.abs(currentY - lastScrollY) < threshold) return;
+  const currentY = window.scrollY;
+  const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
 
-      const newDirection = currentY > lastScrollY ? "down" : "up";
+  // اگر در ابتدا یا انتها هستیم، کاری نکن
+  if (currentY <= 0 || currentY >= maxScroll) return;
 
-      if (newDirection !== scrollDirection) {
-        scrollDirection = newDirection;
+  if (Math.abs(currentY - lastScrollY) < threshold) return;
 
-        if (scrollDirection === "down" && !collapsed && !animatingRef.current) {
-          animatingRef.current = true;
-          gsap.to([filtersRef.current, stepperRef.current], {
-            height: 0,
-            paddingTop: 5,
-            paddingBottom: 5,
-            opacity: 0,
-            duration: 0.2,
-            ease: "power2.out",
-            onComplete: () => {
-              setCollapsed(true);
-              animatingRef.current = false;
-            },
-          });
-        }
+  const newDirection = currentY > lastScrollY ? "down" : "up";
 
-        if (scrollDirection === "up" && collapsed && !animatingRef.current) {
-          animatingRef.current = true;
-          gsap.to([filtersRef.current, stepperRef.current], {
-            height: "auto",
-            paddingTop: 10,
-            paddingBottom: 10,
-            opacity: 1,
-            duration: 0.2,
-            ease: "power2.out",
-            onComplete: () => {
-              setCollapsed(false);
-              animatingRef.current = false;
-            },
-          });
-        }
-      }
+  if (newDirection !== scrollDirection) {
+    scrollDirection = newDirection;
 
-      lastScrollY = currentY;
-    };
+    if (scrollDirection === "down" && !collapsed && !animatingRef.current) {
+      animatingRef.current = true;
+      gsap.to([filtersRef.current, stepperRef.current], {
+        height: 0,
+        paddingTop: 5,
+        paddingBottom: 5,
+        opacity: 0,
+        duration: 0.2,
+        ease: "power2.out",
+        onComplete: () => {
+          setCollapsed(true);
+          animatingRef.current = false;
+        },
+      });
+    }
+
+    if (scrollDirection === "up" && collapsed && !animatingRef.current) {
+      animatingRef.current = true;
+      gsap.to([filtersRef.current, stepperRef.current], {
+        height: "auto",
+        paddingTop: 10,
+        paddingBottom: 10,
+        opacity: 1,
+        duration: 0.2,
+        ease: "power2.out",
+        onComplete: () => {
+          setCollapsed(false);
+          animatingRef.current = false;
+        },
+      });
+    }
+  }
+
+  lastScrollY = currentY;
+};
+
 
     // Throttle ساده برای موبایل
     let ticking = false;
