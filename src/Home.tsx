@@ -84,6 +84,14 @@ const classes: ClassType[] = [
     ],
   },
 ];
+function debounce(func: Function, wait: number) {
+  let timeout: number;
+  return (...args: any[]) => {
+    clearTimeout(timeout);
+    timeout = window.setTimeout(() => func(...args), wait);
+  };
+}
+
 
 export default function ClassSelector() {
 
@@ -114,6 +122,9 @@ const [collapsed, setCollapsed] = useState(false);
   const filtersRef = useRef<HTMLDivElement | null>(null);
   const stepperRef = useRef<HTMLDivElement | null>(null);
 const animatingRef = useRef(false); // وقتی true باشه scroll غیرفعاله
+
+
+
 
 
 useEffect(() => {
@@ -153,7 +164,10 @@ useEffect(() => {
     }
   };
 
-  window.addEventListener("scroll", handleScroll);
+ const debouncedScroll = debounce(handleScroll, 150);
+window.addEventListener("scroll", debouncedScroll);
+return () => window.removeEventListener("scroll", debouncedScroll);
+
   return () => window.removeEventListener("scroll", handleScroll);
 }, [collapsed]);
 
@@ -463,49 +477,38 @@ useEffect(() => {
         <div
           className="h-[3px] w-[70px] bg-gray-100 rounded-2xl cursor-pointer z-50"
           onClick={() => {
-            const stepperEl = stepperRef.current;
-            const filtersEl = filtersRef.current;
-            if (!stepperEl || !filtersEl) return;
+  if (animatingRef.current) return;
 
-            // اگر animation در حال اجراست، کلیک نادیده گرفته می‌شود
-            if (animatingRef.current) return;
-            animatingRef.current = true;
+  animatingRef.current = true;
+  if (!collapsed) {
+    gsap.to([filtersRef.current, stepperRef.current], {
+      height: 0,
+      opacity: 0,
+      paddingTop:5,
+      paddingBottom:5,
+      duration: 0.3,
+      ease: "power2.inOut",
+      onComplete: () => {
+        setCollapsed(true);
+        animatingRef.current = false;
+      }
+    });
+  } else {
+    gsap.to([filtersRef.current, stepperRef.current], {
+      height: "auto",
+      opacity: 1,
+      paddingTop:10,
+      paddingBottom:10,
+      duration: 0.3,
+      ease: "power2.inOut",
+      onComplete: () => {
+        setCollapsed(false);
+        animatingRef.current = false;
+      }
+    });
+  }
+}}
 
-            // overflow hidden برای smooth شدن انیمیشن
-            gsap.set([filtersEl, stepperEl], { overflow: "hidden" });
-
-            if (!collapsed) {
-              // بستن collapse
-              gsap.to([filtersEl, stepperEl], {
-                height: 0,
-                opacity: 0,
-                margin: 0,
-                paddingTop: 5,
-                paddingBottom: 5,
-                duration: 0.3,
-                ease: "power2.inOut",
-                onComplete: () => {
-                  setCollapsed(true); // state بعد از انیمیشن تغییر می‌کند
-                  animatingRef.current = false; // اجازه کلیک مجدد
-                },
-              });
-            } else {
-              // باز کردن collapse
-              gsap.to([filtersEl, stepperEl], {
-                height: "auto",
-                opacity: 1,
-                margin: "1rem 0",
-                paddingTop: 8,
-                paddingBottom: 8,
-                duration: 0.3,
-                ease: "power2.inOut",
-                onComplete: () => {
-                  setCollapsed(false);
-                  animatingRef.current = false;
-                },
-              });
-            }
-          }}
         ></div>
         </div>
       </div>
