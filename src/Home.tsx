@@ -131,7 +131,7 @@ useEffect(() => {
         paddingTop: 10,
         paddingBottom: 10,
         opacity: 1,
-        duration: 0.4,
+        duration: 0.2,
         ease: "power2.out",
         onComplete: () => setCollapsed(false),
       });
@@ -156,7 +156,7 @@ useEffect(() => {
         paddingTop: 5,
         paddingBottom: 5,
         opacity: 0,
-        duration: 0.4,
+        duration: 0.2,
         ease: "power2.out",
         onComplete: () => {
           setCollapsed(true);
