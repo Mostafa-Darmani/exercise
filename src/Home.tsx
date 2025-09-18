@@ -115,20 +115,13 @@ const [collapsed, setCollapsed] = useState(false);
   const filtersRef = useRef<HTMLDivElement | null>(null);
   const stepperRef = useRef<HTMLDivElement | null>(null);
   const animatingRef = useRef(false);
-
 useEffect(() => {
   let lastScrollY = window.scrollY;
   let scrollDirection: "up" | "down" | null = null;
 
-  const threshold = 10; // نوسانات کوچک نادیده گرفته میشه
-
   const handleScroll = () => {
     const currentScrollY = window.scrollY;
-    const diff = currentScrollY - lastScrollY;
-
-    if (Math.abs(diff) < threshold) return;
-
-    const newDirection = diff > 0 ? "down" : "up";
+    const newDirection = currentScrollY > lastScrollY ? "down" : "up";
 
     if (newDirection !== scrollDirection) {
       scrollDirection = newDirection;
@@ -140,7 +133,7 @@ useEffect(() => {
           paddingTop: 5,
           paddingBottom: 5,
           opacity: 0,
-          duration: 0.25,
+          duration: 0.2,
           ease: "power2.out",
           onComplete: () => {
             setCollapsed(true);
@@ -156,7 +149,7 @@ useEffect(() => {
           paddingTop: 10,
           paddingBottom: 10,
           opacity: 1,
-          duration: 0.25,
+          duration: 0.2,
           ease: "power2.out",
           onComplete: () => {
             setCollapsed(false);
@@ -169,10 +162,11 @@ useEffect(() => {
     lastScrollY = currentScrollY;
   };
 
-  const debouncedScroll = () => requestAnimationFrame(handleScroll);
+  // اجرای همزمان با هر فریم اسکرول
+  const scrollListener = () => requestAnimationFrame(handleScroll);
 
-  window.addEventListener("scroll", debouncedScroll, { passive: true });
-  return () => window.removeEventListener("scroll", debouncedScroll);
+  window.addEventListener("scroll", scrollListener, { passive: true });
+  return () => window.removeEventListener("scroll", scrollListener);
 }, [collapsed]);
 
   const collapsedRef = useRef(collapsed);
