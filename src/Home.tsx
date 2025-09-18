@@ -131,8 +131,8 @@ useEffect(() => {
         paddingTop: 10,
         paddingBottom: 10,
         opacity: 1,
-        duration: 0.2,
-        ease: "power2.out",
+        duration: 0.3,
+        ease: "power3.out",
         onComplete: () => setCollapsed(false),
       });
     }
@@ -156,8 +156,8 @@ useEffect(() => {
         paddingTop: 5,
         paddingBottom: 5,
         opacity: 0,
-        duration: 0.2,
-        ease: "power2.out",
+        duration: 0.3,
+        ease: "power3.out",
         onComplete: () => {
           setCollapsed(true);
           animatingRef.current = false;
@@ -172,8 +172,8 @@ useEffect(() => {
         paddingTop: 10,
         paddingBottom: 10,
         opacity: 1,
-        duration: 0.2,
-        ease: "power2.out",
+        duration: 0.3,
+        ease: "power3.out",
         onComplete: () => {
           setCollapsed(false);
           animatingRef.current = false;
