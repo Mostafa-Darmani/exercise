@@ -124,10 +124,26 @@ useEffect(() => {
   const currentY = window.scrollY;
   const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
 
-  // اگر در ابتدا یا انتها هستیم، کاری نکن
-  if (currentY <= 0 || currentY >= maxScroll) return;
+  // اگر در ابتدا هستیم، حتما header باز باشه
+  if (currentY <= 0) {
+    if (collapsed) {
+      gsap.to([filtersRef.current, stepperRef.current], {
+        height: "auto",
+        paddingTop: 10,
+        paddingBottom: 10,
+        opacity: 1,
+        duration: 0.2,
+        ease: "power2.out",
+        onComplete: () => setCollapsed(false),
+      });
+    }
+    lastScrollY = currentY;
+    scrollDirection = "up"; // جهت رو هم ست می‌کنیم
+    return;
+  }
 
-  if (Math.abs(currentY - lastScrollY) < threshold) return;
+  // اگر در انتها هستیم، کاری نکن
+  if (currentY >= maxScroll) return;
 
   const newDirection = currentY > lastScrollY ? "down" : "up";
 
@@ -169,6 +185,7 @@ useEffect(() => {
 
   lastScrollY = currentY;
 };
+
 
 
     // Throttle ساده برای موبایل
