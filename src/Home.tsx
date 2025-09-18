@@ -132,7 +132,7 @@ useEffect(() => {
         paddingBottom: 10,
         opacity: 1,
         duration: 0.3,
-        ease: "power3.out",
+        ease: "sine.out",
         onComplete: () => setCollapsed(false),
       });
     }
@@ -157,7 +157,7 @@ useEffect(() => {
         paddingBottom: 5,
         opacity: 0,
         duration: 0.3,
-        ease: "power3.out",
+        ease: "sine.out",
         onComplete: () => {
           setCollapsed(true);
           animatingRef.current = false;
@@ -173,7 +173,7 @@ useEffect(() => {
         paddingBottom: 10,
         opacity: 1,
         duration: 0.3,
-        ease: "power3.out",
+        ease: "sine.out",
         onComplete: () => {
           setCollapsed(false);
           animatingRef.current = false;
