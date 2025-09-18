@@ -118,7 +118,6 @@ const [collapsed, setCollapsed] = useState(false);
 useEffect(() => {
     let lastScrollY = window.scrollY;
     let scrollDirection: "up" | "down" | null = null;
-    const threshold = 10; // فقط وقتی تغییر اسکرول > 10px باشه انیمیشن اجرا میشه
 
     const handleScroll = () => {
   const currentY = window.scrollY;
@@ -132,7 +131,7 @@ useEffect(() => {
         paddingTop: 10,
         paddingBottom: 10,
         opacity: 1,
-        duration: 0.2,
+        duration: 0.4,
         ease: "power2.out",
         onComplete: () => setCollapsed(false),
       });
@@ -157,7 +156,7 @@ useEffect(() => {
         paddingTop: 5,
         paddingBottom: 5,
         opacity: 0,
-        duration: 0.2,
+        duration: 0.4,
         ease: "power2.out",
         onComplete: () => {
           setCollapsed(true);
